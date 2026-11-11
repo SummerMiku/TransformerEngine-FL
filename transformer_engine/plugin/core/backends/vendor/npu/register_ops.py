@@ -98,6 +98,15 @@ def register_builtins(registry) -> None:
             vendor="NPU",
             priority=100,
         ),
+        # Multi-tensor scale with a device-resident scale tensor
+        OpImpl(
+            op_name="multi_tensor_scale_tensor",
+            impl_id="vendor.npu",
+            kind=BackendImplKind.VENDOR,
+            fn=_bind_is_available(backend.multi_tensor_scale_tensor, is_avail),
+            vendor="NPU",
+            priority=100,
+        ),
         # Multi-tensor L2 norm
         OpImpl(
             op_name="multi_tensor_l2norm",
@@ -134,6 +143,24 @@ def register_builtins(registry) -> None:
             vendor="NPU",
             priority=100,
         ),
+        # cublas streams will not use on Ascend NPU
+        OpImpl(
+            op_name="get_num_cublas_streams",
+            impl_id="vendor.npu",
+            kind=BackendImplKind.VENDOR,
+            fn=_bind_is_available(backend.get_num_cublas_streams, is_avail),
+            vendor="NPU",
+            priority=100,
+        ),
+        # cuDNN is not available on Ascend NPU.
+        OpImpl(
+            op_name="get_cudnn_version",
+            impl_id="vendor.npu",
+            kind=BackendImplKind.VENDOR,
+            fn=_bind_is_available(backend.get_cudnn_version, is_avail),
+            vendor="NPU",
+            priority=100,
+        ),
         # Attention backend selector
         OpImpl(
             op_name="get_attention_backend",
@@ -152,6 +179,23 @@ def register_builtins(registry) -> None:
             vendor="NPU",
             priority=100,
         ),
+        # ===================== Discrete GroupedTensor GEMM adaptation =====================
+        OpImpl(
+            op_name="te_general_grouped_gemm_for_discrete_in",
+            impl_id="vendor.npu",
+            kind=BackendImplKind.VENDOR,
+            fn=_bind_is_available(backend.te_general_grouped_gemm_for_discrete_in, is_avail),
+            vendor="NPU",
+            priority=100,
+        ),
+        OpImpl(
+            op_name="te_general_grouped_gemm_for_discrete_out",
+            impl_id="vendor.npu",
+            kind=BackendImplKind.VENDOR,
+            fn=_bind_is_available(backend.te_general_grouped_gemm_for_discrete_out, is_avail),
+            vendor="NPU",
+            priority=100,
+        ),
         # Generic GEMM
         OpImpl(
             op_name="generic_gemm",
@@ -161,12 +205,39 @@ def register_builtins(registry) -> None:
             vendor="NPU",
             priority=100,
         ),
+        # ===================== splits_to_offsets adaptation =====================
+        OpImpl(
+            op_name="splits_to_offsets",
+            impl_id="vendor.npu",
+            kind=BackendImplKind.VENDOR,
+            fn=_bind_is_available(backend.splits_to_offsets, is_avail),
+            vendor="NPU",
+            priority=100,
+        ),
         # Grouped GEMM
         OpImpl(
             op_name="te_general_grouped_gemm",
             impl_id="vendor.npu",
             kind=BackendImplKind.VENDOR,
             fn=_bind_is_available(backend.te_general_grouped_gemm, is_avail),
+            vendor="NPU",
+            priority=100,
+        ),
+        # Dense GroupedTensor GEMM adaptation
+        OpImpl(
+            op_name="te_general_grouped_gemm_for_grouped_tensor",
+            impl_id="vendor.npu",
+            kind=BackendImplKind.VENDOR,
+            fn=_bind_is_available(backend.te_general_grouped_gemm_for_grouped_tensor, is_avail),
+            vendor="NPU",
+            priority=100,
+        ),
+        # NPU grouped matmul does not require CUDA pointer-setup workspace.
+        OpImpl(
+            op_name="get_grouped_gemm_setup_workspace_size",
+            impl_id="vendor.npu",
+            kind=BackendImplKind.VENDOR,
+            fn=_bind_is_available(backend.get_grouped_gemm_setup_workspace_size, is_avail),
             vendor="NPU",
             priority=100,
         ),
@@ -187,7 +258,7 @@ def register_builtins(registry) -> None:
 # equivalent to native. An implementation that encodes row_id_map its own way
 # has to cover the APIs on both ends of that map (see triton_permutation.py).
 _TRITON_PERMUTATION_APIS = (
-    # "make_row_id_map",
+    "make_row_id_map",
     "permute_with_mask_map",
     "unpermute_with_mask_map",
     # "unpermute_with_mask_map_bwd_with_merging_probs",

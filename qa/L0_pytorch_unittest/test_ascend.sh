@@ -61,8 +61,11 @@ run_pytest_step_with_unfused_attention() {
 run_pytest_step "Ascend vendor NPU backend tests" "pytest_ascend_vendor_npu.xml" false \
     "$TE_PATH/tests/plugin/backend/npu/test_backend_npu.py"
 
-run_pytest_step "Ascend MoE permutation grid limits" "pytest_ascend_moe_permutation.xml" false \
-    "$TE_PATH/tests/plugin/backend/npu/test_permutation_core_dim.py"
+run_pytest_step "NPU MoE row-map tests" "pytest_ascend_moe_row_map.xml" false \
+    "$TE_PATH/tests/plugin/plugin/test_npu_row_id_map.py"
+
+run_pytest_step "NPU MoE gather tests" "pytest_ascend_moe_gather.xml" false \
+    "$TE_PATH/tests/plugin/plugin/test_npu_row_gather.py"
 
 PLUGIN_TEST_ROOT="$TE_PATH/tests/plugin"
 
